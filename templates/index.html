@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>My Task Manager</h1>
+        <p>Organise your work and stay productive.</p>
+
+        <form id="taskForm">
+            <input type="text" id="title" placeholder="Enter task title" required>
+
+            <textarea id="description" placeholder="Task description"></textarea>
+
+            <div class="form-row">
+                <select id="priority">
+                    <option value="Low">Low Priority</option>
+                    <option value="Medium" selected>Medium Priority</option>
+                    <option value="High">High Priority</option>
+                </select>
+
+                <input type="date" id="due_date">
+            </div>
+
+            <button type="submit">Add Task</button>
+        </form>
+
+        <h2>My Tasks</h2>
+
+        <div id="taskList">
+            <p>No tasks yet. Add your first task!</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
