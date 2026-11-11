@@ -37,7 +37,68 @@ async function loadTasks() {
             dueDate.textContent =
                 `Due: ${task.due_date || "No deadline"}`;
 
-            card.append(title, description, details, dueDate);
+           // Create Complete button
+const completeButton = document.createElement("button");
+completeButton.textContent = "Mark as Completed";
+
+// Disable button if already completed
+if (task.status === "Completed") {
+    completeButton.textContent = "Completed ✓";
+    completeButton.disabled = true;
+}
+
+// Update task when button is clicked
+completeButton.addEventListener("click", async () => {
+    try {
+        const response = await fetch(`/api/tasks/${task.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                status: "Completed"
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to update task");
+        }
+
+        await loadTasks();
+
+    } catch (error) {
+        console.error(error);
+        alert("Could not update task.");
+    }
+});
+
+
+const deleteButton = document.createElement("button");
+deleteButton.textContent = "Delete";
+
+deleteButton.addEventListener("click", async () => {
+    if (!confirm("Are you sure you want to delete this task?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/tasks/${task.id}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete task");
+        }
+
+        await loadTasks();
+    } catch (error) {
+        console.error(error);
+        alert("Could not delete task.");
+    }
+});
+
+card.append(title, description, details, dueDate, completeButton, deleteButton);
+
             taskList.appendChild(card);
         });
 

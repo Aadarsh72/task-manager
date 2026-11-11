@@ -96,5 +96,54 @@ def add_task():
         connection.close()
 
 
+@app.route("/api/tasks/<int:task_id>", methods=["PUT"])
+def update_task(task_id):
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid data"}), 400
+
+    status = data.get("status")
+
+    if status not in ["Pending", "Completed"]:
+        return jsonify({"error": "Invalid status"}), 400
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            "UPDATE tasks SET status = %s WHERE id = %s",
+            (status, task_id)
+        )
+
+        connection.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Task not found or unchanged"}), 404
+
+        return jsonify({"message": "Task updated successfully"})
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.route("/api/tasks/<int:task_id>", methods=["DELETE"])
+def delete_task(task_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("DELETE FROM tasks WHERE id = %s", (task_id,))
+        connection.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Task not found"}), 404
+
+        return jsonify({"message": "Task deleted successfully"})
+    finally:
+        cursor.close()
+        connection.close()
+
+        
 if __name__ == "__main__":
     app.run(debug=True)
